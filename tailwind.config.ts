@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['Playfair Display', 'Georgia', 'serif'],
-        body: ['Space Grotesk', 'system-ui', 'sans-serif'],
+        display: ['Instrument Serif', 'Georgia', 'serif'],
+        body: ['Space Mono', 'monospace'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -51,16 +51,14 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        wine: {
-          burgundy: "hsl(var(--wine-burgundy))",
-          merlot: "hsl(var(--wine-merlot))",
-          rose: "hsl(var(--wine-rose))",
-          champagne: "hsl(var(--wine-champagne))",
-          gold: "hsl(var(--wine-gold))",
-          charcoal: "hsl(var(--wine-charcoal))",
-          cream: "hsl(var(--wine-cream))",
-          paper: "hsl(var(--wine-paper))",
+        neon: {
+          pink: "hsl(var(--neon-pink))",
+          orange: "hsl(var(--neon-orange))",
+          yellow: "hsl(var(--neon-yellow))",
+          blue: "hsl(var(--electric-blue))",
         },
+        offwhite: "hsl(var(--off-white))",
+        charcoal: "hsl(var(--charcoal))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

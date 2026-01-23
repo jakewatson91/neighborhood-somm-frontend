@@ -1,190 +1,228 @@
 import { useState } from 'react';
-import { Sliders, Grape } from 'lucide-react';
-import { Slider } from '@/components/ui/slider';
-import { Button } from '@/components/ui/button';
-import { WineCard } from './WineCard';
-import { findWinesByPreference, Wine } from '@/data/wines';
+import { Wine, findWinesByPreference } from '@/data/wines';
+import { WineResultCard } from './WineResultCard';
 
-type WineType = 'red' | 'white' | 'rosé' | 'sparkling' | 'any';
+type WineStyle = 'red' | 'white' | 'sparkling' | 'any';
+type WorldStyle = 'old' | 'new' | 'any';
 
 export function PreferenceSection() {
-  const [fruity, setFruity] = useState(3);
-  const [earthy, setEarthy] = useState(3);
-  const [tannic, setTannic] = useState(3);
   const [body, setBody] = useState(3);
-  const [wineType, setWineType] = useState<WineType>('any');
+  const [acidity, setAcidity] = useState(3);
+  const [tannin, setTannin] = useState(3);
+  const [wineStyle, setWineStyle] = useState<WineStyle>('any');
+  const [worldStyle, setWorldStyle] = useState<WorldStyle>('any');
+  const [flavorInput, setFlavorInput] = useState('');
   const [results, setResults] = useState<Wine[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
 
   const handleDiscover = () => {
+    const type = wineStyle === 'any' ? undefined : wineStyle;
     const matches = findWinesByPreference({
-      fruity,
-      earthy,
-      tannic,
       body,
-      type: wineType === 'any' ? undefined : wineType
+      tannic: tannin,
+      type,
+      // We'll expand the matching later to include acidity and world style
     });
-    setResults(matches);
+    
+    // Filter by world style
+    let filtered = matches;
+    if (worldStyle === 'old') {
+      filtered = matches.filter(w => ['France', 'Italy', 'Spain', 'Germany', 'Austria'].includes(w.country));
+    } else if (worldStyle === 'new') {
+      filtered = matches.filter(w => ['USA', 'Argentina', 'New Zealand', 'Australia', 'Chile'].includes(w.country));
+    }
+    
+    // Filter by flavor notes if provided
+    if (flavorInput.trim()) {
+      const searchTerms = flavorInput.toLowerCase().split(',').map(s => s.trim());
+      filtered = filtered.filter(w => 
+        w.flavorNotes.some(note => 
+          searchTerms.some(term => note.toLowerCase().includes(term))
+        )
+      );
+    }
+    
+    setResults(filtered.length > 0 ? filtered : matches.slice(0, 4));
     setHasSearched(true);
   };
 
-  const wineTypes: { value: WineType; label: string }[] = [
-    { value: 'any', label: 'Any' },
-    { value: 'red', label: 'Red' },
-    { value: 'white', label: 'White' },
-    { value: 'rosé', label: 'Rosé' },
-    { value: 'sparkling', label: 'Sparkling' },
-  ];
+  const ToggleButton = ({ 
+    active, 
+    onClick, 
+    children 
+  }: { 
+    active: boolean; 
+    onClick: () => void; 
+    children: React.ReactNode 
+  }) => (
+    <button
+      onClick={onClick}
+      className={`px-4 py-2 font-body text-xs uppercase tracking-wider transition-all border ${
+        active
+          ? 'bg-primary text-primary-foreground border-primary glow-pink'
+          : 'bg-transparent text-foreground border-border hover:border-primary/50'
+      }`}
+    >
+      {children}
+    </button>
+  );
+
+  const SliderControl = ({
+    label,
+    value,
+    onChange,
+    leftLabel,
+    rightLabel,
+  }: {
+    label: string;
+    value: number;
+    onChange: (v: number) => void;
+    leftLabel: string;
+    rightLabel: string;
+  }) => (
+    <div className="space-y-3">
+      <div className="flex justify-between items-center">
+        <label className="font-display text-xl text-foreground">{label}</label>
+        <span className="font-body text-sm text-primary">{value}/5</span>
+      </div>
+      <div className="flex items-center gap-4">
+        <span className="font-body text-xs text-muted-foreground w-16">{leftLabel}</span>
+        <div className="flex-1 flex gap-2">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <button
+              key={n}
+              onClick={() => onChange(n)}
+              className={`flex-1 h-3 transition-all ${
+                n <= value
+                  ? 'bg-neon-gradient'
+                  : 'bg-muted hover:bg-muted/80'
+              }`}
+            />
+          ))}
+        </div>
+        <span className="font-body text-xs text-muted-foreground w-16 text-right">{rightLabel}</span>
+      </div>
+    </div>
+  );
 
   return (
-    <section id="discover" className="py-20 px-4 bg-card">
+    <section className="py-16 px-6">
       <div className="container mx-auto max-w-4xl">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-sm mb-4">
-            <Sliders className="w-4 h-4 text-primary" />
-            <span className="font-body text-sm uppercase tracking-wider text-primary font-semibold">
-              Discover Your Style
-            </span>
-          </div>
-          
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Build your perfect wine
+        {/* Hero Text */}
+        <div className="text-center mb-16">
+          <h2 className="font-display text-5xl md:text-7xl lg:text-8xl text-foreground mb-6 italic">
+            What are you <span className="text-neon-gradient">into?</span>
           </h2>
-          <p className="font-body text-muted-foreground text-lg max-w-xl mx-auto">
-            Slide around. Tell us what you like. We'll find wines that match your vibe.
+          <p className="font-body text-sm text-muted-foreground max-w-md mx-auto uppercase tracking-wider">
+            Tell us your vibe. We'll find the bottle.
           </p>
         </div>
 
-        <div className="bg-background border-2 border-border rounded-sm p-8 mb-8">
-          {/* Wine type selector */}
-          <div className="mb-8">
-            <label className="font-display text-sm font-semibold text-foreground mb-3 block">
-              Type of Wine
-            </label>
+        {/* Preference Controls */}
+        <div className="space-y-12 mb-12">
+          {/* Wine Style */}
+          <div>
+            <label className="font-display text-xl text-foreground mb-4 block">Style</label>
             <div className="flex flex-wrap gap-2">
-              {wineTypes.map(({ value, label }) => (
-                <button
-                  key={value}
-                  onClick={() => setWineType(value)}
-                  className={`px-4 py-2 font-body text-sm rounded-sm transition-colors ${
-                    wineType === value
-                      ? 'bg-wine-gradient text-primary-foreground'
-                      : 'bg-secondary text-foreground hover:bg-wine-burgundy/20'
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
+              <ToggleButton active={wineStyle === 'any'} onClick={() => setWineStyle('any')}>
+                Any
+              </ToggleButton>
+              <ToggleButton active={wineStyle === 'red'} onClick={() => setWineStyle('red')}>
+                Red
+              </ToggleButton>
+              <ToggleButton active={wineStyle === 'white'} onClick={() => setWineStyle('white')}>
+                White
+              </ToggleButton>
+              <ToggleButton active={wineStyle === 'sparkling'} onClick={() => setWineStyle('sparkling')}>
+                Sparkling
+              </ToggleButton>
+            </div>
+          </div>
+
+          {/* World Style */}
+          <div>
+            <label className="font-display text-xl text-foreground mb-4 block">World</label>
+            <div className="flex flex-wrap gap-2">
+              <ToggleButton active={worldStyle === 'any'} onClick={() => setWorldStyle('any')}>
+                Any
+              </ToggleButton>
+              <ToggleButton active={worldStyle === 'old'} onClick={() => setWorldStyle('old')}>
+                Old World
+              </ToggleButton>
+              <ToggleButton active={worldStyle === 'new'} onClick={() => setWorldStyle('new')}>
+                New World
+              </ToggleButton>
             </div>
           </div>
 
           {/* Sliders */}
-          <div className="grid md:grid-cols-2 gap-8">
-            <div>
-              <div className="flex justify-between mb-2">
-                <label className="font-display text-sm font-semibold text-foreground">Fruity</label>
-                <span className="font-body text-sm text-muted-foreground">{fruity}/5</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-muted-foreground">Subtle</span>
-                <Slider
-                  value={[fruity]}
-                  onValueChange={(v) => setFruity(v[0])}
-                  min={1}
-                  max={5}
-                  step={1}
-                  className="flex-1"
-                />
-                <span className="text-xs text-muted-foreground">Intense</span>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between mb-2">
-                <label className="font-display text-sm font-semibold text-foreground">Earthy</label>
-                <span className="font-body text-sm text-muted-foreground">{earthy}/5</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-muted-foreground">Clean</span>
-                <Slider
-                  value={[earthy]}
-                  onValueChange={(v) => setEarthy(v[0])}
-                  min={1}
-                  max={5}
-                  step={1}
-                  className="flex-1"
-                />
-                <span className="text-xs text-muted-foreground">Funky</span>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between mb-2">
-                <label className="font-display text-sm font-semibold text-foreground">Tannins</label>
-                <span className="font-body text-sm text-muted-foreground">{tannic}/5</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-muted-foreground">Silky</span>
-                <Slider
-                  value={[tannic]}
-                  onValueChange={(v) => setTannic(v[0])}
-                  min={0}
-                  max={5}
-                  step={1}
-                  className="flex-1"
-                />
-                <span className="text-xs text-muted-foreground">Grippy</span>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between mb-2">
-                <label className="font-display text-sm font-semibold text-foreground">Body</label>
-                <span className="font-body text-sm text-muted-foreground">{body}/5</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-muted-foreground">Light</span>
-                <Slider
-                  value={[body]}
-                  onValueChange={(v) => setBody(v[0])}
-                  min={1}
-                  max={5}
-                  step={1}
-                  className="flex-1"
-                />
-                <span className="text-xs text-muted-foreground">Full</span>
-              </div>
-            </div>
+          <div className="grid md:grid-cols-1 gap-8">
+            <SliderControl
+              label="Body"
+              value={body}
+              onChange={setBody}
+              leftLabel="Light"
+              rightLabel="Full"
+            />
+            <SliderControl
+              label="Acidity"
+              value={acidity}
+              onChange={setAcidity}
+              leftLabel="Soft"
+              rightLabel="Bright"
+            />
+            <SliderControl
+              label="Tannin"
+              value={tannin}
+              onChange={setTannin}
+              leftLabel="Silky"
+              rightLabel="Grippy"
+            />
           </div>
 
-          <div className="mt-8 text-center">
-            <Button 
-              onClick={handleDiscover}
-              className="px-8 py-6 bg-wine-gradient hover:opacity-90 text-primary-foreground font-body font-semibold uppercase tracking-wider rounded-sm text-lg"
-            >
-              <Grape className="w-5 h-5 mr-2" />
-              Find My Wine
-            </Button>
+          {/* Flavor Input */}
+          <div>
+            <label className="font-display text-xl text-foreground mb-4 block">
+              Flavor notes <span className="text-muted-foreground text-sm">(optional)</span>
+            </label>
+            <input
+              type="text"
+              value={flavorInput}
+              onChange={(e) => setFlavorInput(e.target.value)}
+              placeholder="cherry, vanilla, earthy..."
+              className="w-full bg-transparent border border-border px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+            />
           </div>
         </div>
 
+        {/* Submit Button */}
+        <div className="text-center mb-16">
+          <button
+            onClick={handleDiscover}
+            className="px-12 py-4 bg-neon-gradient text-primary-foreground font-body text-sm uppercase tracking-widest hover:opacity-90 transition-opacity glow-pink"
+          >
+            Find My Wine
+          </button>
+        </div>
+
+        {/* Results */}
         {hasSearched && (
           <div className="animate-fade-in-up">
             {results.length > 0 ? (
               <>
-                <h3 className="font-display text-2xl font-bold text-foreground mb-6 text-center">
-                  Wines that match your style
+                <h3 className="font-display text-3xl md:text-4xl text-foreground mb-8 text-center italic">
+                  Here's what we'd pour you
                 </h3>
                 <div className="grid md:grid-cols-2 gap-6 stagger-children">
                   {results.map((wine) => (
-                    <WineCard key={wine.id} wine={wine} />
+                    <WineResultCard key={wine.id} wine={wine} />
                   ))}
                 </div>
               </>
             ) : (
-              <div className="text-center py-12">
-                <p className="font-body text-muted-foreground text-lg">
-                  No perfect matches. Try adjusting your preferences!
+              <div className="text-center py-12 border border-border">
+                <p className="font-body text-sm text-muted-foreground uppercase tracking-wider">
+                  No matches found. Try adjusting your preferences.
                 </p>
               </div>
             )}
