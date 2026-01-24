@@ -14,7 +14,7 @@ export function WineResultCard({ wine }: WineResultCardProps) {
     dessert: 'bg-amber-900/30 text-amber-400 border-amber-900/50',
   };
 
-  const wineSearchUrl = `https://www.wine-searcher.com/find/${encodeURIComponent(wine.name)}`;
+  const wineSearchUrl = `https://neighborhoodwines.com/products/${encodeURIComponent(wine.handle)}`;
 
   return (
     <div className="border border-border bg-card p-6 hover:border-primary/50 transition-colors group">
