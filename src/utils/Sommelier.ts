@@ -1,58 +1,84 @@
-// src/utils/mockSommelier.ts
+import { Wine, UserPreferences } from '@/data/wines'; 
 
-// Define the shape of the data we expect back from Python
-export interface BackendWine {
-  id: number;
-  title: string;
-  price: number;
-  image: string;
-  handle: string;
-  note: string;
-}
+export const mapBackendToFrontend = (w: any, aiNote: string): Wine => {
+  return {
+    id: w.id || Math.random(),
+    title: w.title,
+    description: w.description || "",
+    
+    // FIX 1: Map 'product_type' to 'type'
+    type: w.product_type ? w.product_type.toLowerCase() : 'red',
+    
+    region: "Global", // Your clean data doesn't have region yet, defaulting
+    country: "International",
+    grape: "Blend",
+    priceRange: `$${w.price}`,
+    note: aiNote, // The AI note
+    
+    // FIX 2: Map 'image_url' to 'image'
+    // This is the specific key from your clean_wine_data function
+    image: w.image_url || "https://placehold.co/400x600?text=No+Image",
+    
+    handle: w.handle || "#",
+    
+    // FIX 3: Use 'tags' for flavor notes
+    flavorNotes: w.tags && w.tags.length > 0 ? w.tags.slice(0, 4) : ["Sommelier Selection"],
+    
+    // We stick with random profile stats for now since inferred_features is a raw dict
+    profile: {
+      body: Math.floor(Math.random() * 5) + 1,
+      acidic: Math.floor(Math.random() * 5) + 1,
+      tannic: Math.floor(Math.random() * 5) + 1,
+    }
+  };
+};
 
-export interface UserPreferences {
-  vibe: string;
-  type: string;
-  maxPrice: number;
-}
-
-export const findMockWine = async (prefs: UserPreferences): Promise<BackendWine | null> => {
+export const findMockWine = async (prefs: UserPreferences): Promise<{wines : Wine[], firstNote : string } | null> => {
   try {
-    // 1. Log what we are sending (Great for debugging)
-    console.log("🍷 Calling Python Backend with:", prefs);
-
-    // 2. Call your local Python server
-    // Make sure you ran 'uvicorn main:app --reload' in your terminal!
+    console.log("🍷 Calling Python Backend...", prefs);
     const response = await fetch('http://127.0.0.1:8000/find-wine', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(prefs),
     });
 
-    if (!response.ok) {
-      throw new Error(`Server error: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
     const data = await response.json();
-    console.log("✅ Python responded:", data);
+    console.log("✅ Python Data Received:", data);
 
-    // 3. Map the Python response to our Frontend shape
-    // The backend returns { wine: {...}, note: "..." }
-    // We flatten it for easier use in the UI
-    return {
-      id: data.wine.id,
-      title: data.wine.title,
-      price: data.wine.price,
-      image: data.wine.image || "/placeholder.jpg", // Fallback image
-      handle: data.wine.handle,
-      note: data.note
-    };
+    const wines = data.results.map((w: any, index: number) =>
+        mapBackendToFrontend(w, index == 0 ? data.note : "")
+    );
+
+    return {wines, firstNote: data.note}
 
   } catch (error) {
     console.error("❌ Backend connection failed:", error);
-    alert("Is your Python backend running? Check your terminal!");
     return null;
   }
+};
+
+export const getSommelierNote = async (vibe: string, wine: Wine): Promise<string> => {
+    try {
+        const response = await fetch('http://127.0.0.1:8000/get-note', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                vibe: vibe, 
+                wine: {
+                    title: wine.title,
+                    description: wine.description
+                }
+            }),
+        });
+        
+        if (!response.ok) return "A delicious choice that fits your vibe";
+
+        const data = await response.json()
+        return data.note;
+    
+    } catch (error) {
+        return 'Another excellent option: ${wine.title}.';
+    }
 };

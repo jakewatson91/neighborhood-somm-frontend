@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { findMockWine, BackendWine } from '../utils/Sommelier';
+import { findMockWine, getSommelierNote } from '../utils/Sommelier';
+import { Wine } from '../data/wines';
 // import { WineResultCard } from './WineResultCard'; // You can keep using this if you adapt the props, or use the inline one below for now
 
 type WineStyle = 'red' | 'white' | 'sparkling' | 'any';
@@ -16,9 +17,15 @@ export function PreferenceSection() {
   const [maxPrice, setMaxPrice] = useState(50); // Added Budget Slider
   
   // Backend State
-  const [result, setResult] = useState<BackendWine | null>(null);
+  const [wines, setWines] = useState<Wine[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentNote, setCurrentNote] = useState('');
+
   const [isLoading, setIsLoading] = useState(false);
+  const [isShuffling, setIsShuffling] = useState(false);
   const [error, setError] = useState('');
+
+  const activeWine = wines[currentIndex];
 
   // --- LOGIC HELPER ---
   const getIntensityParams = () => {
@@ -35,7 +42,7 @@ export function PreferenceSection() {
   const handleDiscover = async () => {
     setIsLoading(true);
     setError('');
-    setResult(null);
+    setWines([]);
 
     // Construct the Vibe String
     const technicalVibe = getIntensityParams();
@@ -47,20 +54,38 @@ export function PreferenceSection() {
     console.log("🚀 Sending Vibe:", combinedVibe);
 
     // Call Backend
-    const wine = await findMockWine({
+    const data = await findMockWine({
       vibe: combinedVibe,
       type: wineStyle === 'any' ? 'Any' : wineStyle.charAt(0).toUpperCase() + wineStyle.slice(1), // Fix case for backend
       maxPrice: maxPrice
     });
 
-    if (wine) {
-      setResult(wine);
+    if (data && data.wines.length > 0) {
+      setWines(data.wines);
+      setCurrentNote(data.firstNote);
+      setCurrentIndex(0);
+
     } else {
       setError("No matches found. Try adjusting your preferences.");
     }
     
     setIsLoading(false);
   };
+
+  const handleShuffle = async () => {
+    if (wines.length === 0) return;
+    setIsShuffling(true);
+
+    const nextIndex = (currentIndex + 1) % wines.length;
+    const nextWine = wines[nextIndex];
+    setCurrentIndex(nextIndex);
+    setCurrentNote("Asking the sommelier...");
+
+    const note = await getSommelierNote("Best match for my taste", nextWine);
+
+    setCurrentNote(note);
+    setIsShuffling(false);
+  }
 
   // --- YOUR ORIGINAL COMPONENTS (Unchanged) ---
   const ToggleButton = ({ active, onClick, children }: any) => (
@@ -105,7 +130,8 @@ export function PreferenceSection() {
   return (
     <section className="py-16 px-6">
       <div className="container mx-auto max-w-4xl">
-        {/* Hero Text */}
+        
+        {/* 1. HERO TEXT */}
         <div className="text-center mb-16">
           <h2 className="font-display text-5xl md:text-7xl lg:text-8xl text-foreground mb-6 italic">
             What are you <span className="text-neon-gradient">into?</span>
@@ -115,7 +141,7 @@ export function PreferenceSection() {
           </p>
         </div>
 
-        {/* Preference Controls */}
+        {/* 2. PREFERENCE CONTROLS */}
         <div className="space-y-12 mb-12 border border-border p-8 rounded-xl bg-background/50 backdrop-blur-sm">
           
           {/* Wine Style */}
@@ -140,7 +166,7 @@ export function PreferenceSection() {
             </div>
           </div>
 
-          {/* NEW: Budget Slider (Styled to match) */}
+          {/* Budget Slider */}
           <div className="space-y-3">
              <div className="flex justify-between items-center">
                 <label className="font-display text-xl text-foreground">Max Budget</label>
@@ -153,7 +179,7 @@ export function PreferenceSection() {
              />
           </div>
 
-          {/* Sliders */}
+          {/* Taste Sliders */}
           <div className="grid md:grid-cols-1 gap-8">
             <SliderControl label="Body" value={body} onChange={setBody} leftLabel="Light" rightLabel="Full" />
             <SliderControl label="Acidity" value={acidity} onChange={setAcidity} leftLabel="Soft" rightLabel="Bright" />
@@ -175,7 +201,7 @@ export function PreferenceSection() {
           </div>
         </div>
 
-        {/* Submit Button */}
+        {/* 3. SUBMIT BUTTON */}
         <div className="text-center mb-16">
           <button
             onClick={handleDiscover}
@@ -186,38 +212,62 @@ export function PreferenceSection() {
           </button>
         </div>
 
-        {/* RESULTS SECTION (Adapted for Single Result) */}
+        {/* 4. RESULTS SECTION */}
         {error && <div className="text-center text-red-500 font-body mb-8">{error}</div>}
 
-        {result && (
+        {activeWine && (
           <div className="animate-fade-in-up">
               <h3 className="font-display text-3xl md:text-4xl text-foreground mb-8 text-center italic">
                 Here's what we'd pour you
               </h3>
               
               <div className="max-w-md mx-auto bg-card border border-border rounded-lg overflow-hidden shadow-2xl glow-pink">
+                 {/* Image */}
                  <div className="aspect-[4/5] relative bg-muted">
-                    <img src={result.image} alt={result.title} className="w-full h-full object-cover" />
+                    <img 
+                      src={activeWine.image} 
+                      alt={activeWine.title} 
+                      className="w-full h-full object-cover"
+                      onError={(e) => e.currentTarget.src = "https://placehold.co/400x600?text=No+Image"} 
+                    />
                  </div>
+                 
+                 {/* Details */}
                  <div className="p-6 space-y-4">
                     <div className="flex justify-between items-start">
-                       <h4 className="font-display text-2xl text-foreground leading-tight">{result.title}</h4>
-                       <span className="font-body text-lg font-bold text-primary">${result.price}</span>
+                       <h4 className="font-display text-2xl text-foreground leading-tight">{activeWine.title}</h4>
+                       <span className="font-body text-lg font-bold text-primary">{activeWine.priceRange}</span>
                     </div>
                     
-                    <div className="relative pl-4 border-l-2 border-primary">
+                    {/* The Note */}
+                    <div className="relative pl-4 border-l-2 border-primary min-h-[60px]">
                        <p className="font-body text-sm text-muted-foreground italic">
-                         "{result.note}"
+                         {isShuffling && currentNote === "Asking the Sommelier..." ? (
+                           <span className="animate-pulse">Thinking...</span>
+                         ) : (
+                           `"${currentNote}"`
+                         )}
                        </p>
                     </div>
 
-                    <a 
-                      href={`https://neighborhoodwines.com/products/${result.handle}`}
-                      target="_blank"
-                      className="block w-full py-3 bg-primary text-primary-foreground text-center font-body text-xs uppercase tracking-widest hover:bg-primary/90 transition-colors"
-                    >
-                      Buy Now
-                    </a>
+                    {/* Actions */}
+                    <div className="flex gap-3 pt-2">
+                        <a 
+                          href={`https://neighborhoodwines.com/products/${activeWine.handle}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex-1 py-3 bg-primary text-primary-foreground text-center font-body text-xs uppercase tracking-widest hover:bg-primary/90 transition-colors"
+                        >
+                          Buy Now
+                        </a>
+                        <button 
+                          onClick={handleShuffle}
+                          disabled={isShuffling}
+                          className="px-4 py-3 border border-border text-foreground hover:bg-muted transition-colors font-body text-xs uppercase tracking-widest"
+                        >
+                          {isShuffling ? "..." : "Shuffle"}
+                        </button>
+                    </div>
                  </div>
               </div>
           </div>

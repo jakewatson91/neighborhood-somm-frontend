@@ -18,21 +18,24 @@ export function WineResultCard({ wine }: WineResultCardProps) {
 
   return (
     <div className="border border-border bg-card p-6 hover:border-primary/50 transition-colors group">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <span className={`inline-block px-2 py-1 text-xs font-body uppercase tracking-wider border ${typeColors[wine.type]}`}>
-            {wine.type}
-          </span>
-        </div>
-        <span className="font-body text-xs text-muted-foreground">
-          {wine.priceRange}
-        </span>
+      
+      {/* --- NEW: IMAGE SECTION --- */}
+      {/* We add this right at the top of the card */}
+      <div className="mb-6 overflow-hidden rounded-md bg-white border border-border/50 flex justify-center p-4 h-64 relative">
+         {wine.image ? (
+            <img 
+                src={wine.image} 
+                alt={wine.title} 
+                className="h-full w-auto object-contain mix-blend-multiply hover:scale-105 transition-transform duration-500"
+            />
+         ) : (
+            <div className="flex items-center justify-center h-full text-muted-foreground">No Image</div>
+         )}
       </div>
 
       {/* Name & Region */}
       <h4 className="font-display text-2xl md:text-3xl text-foreground mb-1 italic group-hover:text-primary transition-colors">
-        {wine.name}
+        {wine.title}
       </h4>
       <p className="font-body text-xs text-muted-foreground uppercase tracking-wider mb-4">
         {wine.region}, {wine.country} · {wine.grape}
@@ -40,7 +43,7 @@ export function WineResultCard({ wine }: WineResultCardProps) {
 
       {/* Description */}
       <p className="font-body text-sm text-foreground/80 leading-relaxed mb-6">
-        {wine.description}
+        {wine.note}
       </p>
 
       {/* Flavor Notes */}
