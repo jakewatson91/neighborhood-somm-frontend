@@ -1,20 +1,20 @@
 import { useState } from 'react';
 import { findMockWine, getSommelierNote } from '../utils/Sommelier';
 import { Wine } from '../data/wines';
-// import { WineResultCard } from './WineResultCard'; // You can keep using this if you adapt the props, or use the inline one below for now
+import { ChatInput, ParsedPreferences } from './ChatInput';
 
 type WineStyle = 'red' | 'white' | 'sparkling' | 'any';
 type WorldStyle = 'old' | 'new' | 'any';
 
 export function PreferenceSection() {
-  // --- NEW STATE ---
+  // Preference State
   const [body, setBody] = useState(3);
   const [acidity, setAcidity] = useState(3);
   const [tannin, setTannin] = useState(3);
   const [wineStyle, setWineStyle] = useState<WineStyle>('any');
   const [worldStyle, setWorldStyle] = useState<WorldStyle>('any');
   const [flavorInput, setFlavorInput] = useState('');
-  const [maxPrice, setMaxPrice] = useState(50); // Added Budget Slider
+  const [maxPrice, setMaxPrice] = useState(50);
   
   // Backend State
   const [wines, setWines] = useState<Wine[]>([]);
@@ -26,6 +26,17 @@ export function PreferenceSection() {
   const [error, setError] = useState('');
 
   const activeWine = wines[currentIndex];
+
+  // Handle AI-parsed preferences
+  const handlePreferencesParsed = (prefs: ParsedPreferences) => {
+    setBody(prefs.body);
+    setAcidity(prefs.acidity);
+    setTannin(prefs.tannin);
+    setWineStyle(prefs.wineStyle);
+    setWorldStyle(prefs.worldStyle);
+    setMaxPrice(prefs.maxPrice);
+    setFlavorInput(prefs.flavorNotes);
+  };
 
   // --- LOGIC HELPER ---
   const getIntensityParams = () => {
@@ -144,6 +155,12 @@ export function PreferenceSection() {
         {/* SINGLE COLUMN LAYOUT */}
         <div className="max-w-2xl mx-auto space-y-8">
           
+          {/* CHAT INPUT - AI Parser */}
+          <ChatInput 
+            onPreferencesParsed={handlePreferencesParsed} 
+            isLoading={isLoading} 
+          />
+
           {/* PREFERENCE CONTROLS */}
           <div className="space-y-8 border border-border p-6 md:p-8 bg-background/50 backdrop-blur-sm">
             
