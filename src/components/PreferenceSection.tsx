@@ -128,151 +128,174 @@ export function PreferenceSection() {
   );
 
   return (
-    <section className="py-16 px-6">
-      <div className="container mx-auto max-w-4xl">
+    <section className="py-8 md:py-16 px-4 md:px-6 min-h-[calc(100vh-120px)]">
+      <div className="container mx-auto max-w-7xl">
         
-        {/* 1. HERO TEXT */}
-        <div className="text-center mb-16">
-          <h2 className="font-display text-5xl md:text-7xl lg:text-8xl text-foreground mb-6 italic">
+        {/* HERO TEXT */}
+        <div className="text-center mb-8 md:mb-12">
+          <h2 className="font-display text-4xl md:text-6xl lg:text-7xl text-foreground mb-4 italic">
             What are you <span className="text-neon-gradient">into?</span>
           </h2>
-          <p className="font-body text-sm text-muted-foreground max-w-md mx-auto uppercase tracking-wider">
+          <p className="font-body text-xs text-muted-foreground max-w-md mx-auto uppercase tracking-wider">
             Tell us your vibe. We'll find the bottle.
           </p>
         </div>
 
-        {/* 2. PREFERENCE CONTROLS */}
-        <div className="space-y-12 mb-12 border border-border p-8 rounded-xl bg-background/50 backdrop-blur-sm">
+        {/* SPLIT LAYOUT */}
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
           
-          {/* Wine Style */}
-          <div>
-            <label className="font-display text-xl text-foreground mb-4 block">Style</label>
-            <div className="flex flex-wrap gap-2">
-              {['any', 'red', 'white', 'sparkling'].map(s => (
-                <ToggleButton key={s} active={wineStyle === s} onClick={() => setWineStyle(s as any)}>
-                  {s.charAt(0).toUpperCase() + s.slice(1)}
-                </ToggleButton>
-              ))}
-            </div>
-          </div>
-
-          {/* World Style */}
-          <div>
-            <label className="font-display text-xl text-foreground mb-4 block">World</label>
-            <div className="flex flex-wrap gap-2">
-              <ToggleButton active={worldStyle === 'any'} onClick={() => setWorldStyle('any')}>Any</ToggleButton>
-              <ToggleButton active={worldStyle === 'old'} onClick={() => setWorldStyle('old')}>Old World</ToggleButton>
-              <ToggleButton active={worldStyle === 'new'} onClick={() => setWorldStyle('new')}>New World</ToggleButton>
-            </div>
-          </div>
-
-          {/* Budget Slider */}
-          <div className="space-y-3">
-             <div className="flex justify-between items-center">
-                <label className="font-display text-xl text-foreground">Max Budget</label>
-                <span className="font-body text-sm text-primary">${maxPrice}</span>
-             </div>
-             <input 
-               type="range" min="20" max="150" step="5" 
-               value={maxPrice} onChange={(e) => setMaxPrice(Number(e.target.value))}
-               className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
-             />
-          </div>
-
-          {/* Taste Sliders */}
-          <div className="grid md:grid-cols-1 gap-8">
-            <SliderControl label="Body" value={body} onChange={setBody} leftLabel="Light" rightLabel="Full" />
-            <SliderControl label="Acidity" value={acidity} onChange={setAcidity} leftLabel="Soft" rightLabel="Bright" />
-            <SliderControl label="Tannin" value={tannin} onChange={setTannin} leftLabel="Silky" rightLabel="Grippy" />
-          </div>
-
-          {/* Flavor Input */}
-          <div>
-            <label className="font-display text-xl text-foreground mb-4 block">
-              Flavor notes <span className="text-muted-foreground text-sm">(optional)</span>
-            </label>
-            <input
-              type="text"
-              value={flavorInput}
-              onChange={(e) => setFlavorInput(e.target.value)}
-              placeholder="cherry, vanilla, earthy..."
-              className="w-full bg-transparent border border-border px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
-            />
-          </div>
-        </div>
-
-        {/* 3. SUBMIT BUTTON */}
-        <div className="text-center mb-16">
-          <button
-            onClick={handleDiscover}
-            disabled={isLoading}
-            className="px-12 py-4 bg-neon-gradient text-primary-foreground font-body text-sm uppercase tracking-widest hover:opacity-90 transition-opacity glow-pink disabled:opacity-50"
-          >
-            {isLoading ? "Consulting Sommelier..." : "Find My Wine"}
-          </button>
-        </div>
-
-        {/* 4. RESULTS SECTION */}
-        {error && <div className="text-center text-red-500 font-body mb-8">{error}</div>}
-
-        {activeWine && (
-          <div className="animate-fade-in-up">
-              <h3 className="font-display text-3xl md:text-4xl text-foreground mb-8 text-center italic">
-                Here's what we'd pour you
-              </h3>
-              
-              <div className="max-w-md mx-auto bg-card border border-border rounded-lg overflow-hidden shadow-2xl glow-pink">
-                 {/* Image */}
-                 <div className="aspect-[4/5] relative bg-muted">
-                    <img 
-                      src={activeWine.image} 
-                      alt={activeWine.title} 
-                      className="w-full h-full object-cover"
-                      onError={(e) => e.currentTarget.src = "https://placehold.co/400x600?text=No+Image"} 
-                    />
-                 </div>
-                 
-                 {/* Details */}
-                 <div className="p-6 space-y-4">
-                    <div className="flex justify-between items-start">
-                       <h4 className="font-display text-2xl text-foreground leading-tight">{activeWine.title}</h4>
-                       <span className="font-body text-lg font-bold text-primary">{activeWine.priceRange}</span>
-                    </div>
-                    
-                    {/* The Note */}
-                    <div className="relative pl-4 border-l-2 border-primary min-h-[60px]">
-                       <p className="font-body text-sm text-muted-foreground italic">
-                         {isShuffling && currentNote === "Asking the Sommelier..." ? (
-                           <span className="animate-pulse">Thinking...</span>
-                         ) : (
-                           `"${currentNote}"`
-                         )}
-                       </p>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-3 pt-2">
-                        <a 
-                          href={`https://neighborhoodwines.com/products/${activeWine.handle}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex-1 py-3 bg-primary text-primary-foreground text-center font-body text-xs uppercase tracking-widest hover:bg-primary/90 transition-colors"
-                        >
-                          Buy Now
-                        </a>
-                        <button 
-                          onClick={handleShuffle}
-                          disabled={isShuffling}
-                          className="px-4 py-3 border border-border text-foreground hover:bg-muted transition-colors font-body text-xs uppercase tracking-widest"
-                        >
-                          {isShuffling ? "..." : "Shuffle"}
-                        </button>
-                    </div>
-                 </div>
+          {/* LEFT: PREFERENCE CONTROLS */}
+          <div className="space-y-8 border border-border p-6 md:p-8 bg-background/50 backdrop-blur-sm">
+            
+            {/* Wine Style */}
+            <div>
+              <label className="font-display text-lg text-foreground mb-3 block">Style</label>
+              <div className="flex flex-wrap gap-2">
+                {['any', 'red', 'white', 'sparkling'].map(s => (
+                  <ToggleButton key={s} active={wineStyle === s} onClick={() => setWineStyle(s as any)}>
+                    {s.charAt(0).toUpperCase() + s.slice(1)}
+                  </ToggleButton>
+                ))}
               </div>
-          </div>
-        )}
+            </div>
 
+            {/* World Style */}
+            <div>
+              <label className="font-display text-lg text-foreground mb-3 block">World</label>
+              <div className="flex flex-wrap gap-2">
+                <ToggleButton active={worldStyle === 'any'} onClick={() => setWorldStyle('any')}>Any</ToggleButton>
+                <ToggleButton active={worldStyle === 'old'} onClick={() => setWorldStyle('old')}>Old World</ToggleButton>
+                <ToggleButton active={worldStyle === 'new'} onClick={() => setWorldStyle('new')}>New World</ToggleButton>
+              </div>
+            </div>
+
+            {/* Budget Slider */}
+            <div className="space-y-2">
+               <div className="flex justify-between items-center">
+                  <label className="font-display text-lg text-foreground">Max Budget</label>
+                  <span className="font-body text-sm text-primary">${maxPrice}</span>
+               </div>
+               <input 
+                 type="range" min="20" max="150" step="5" 
+                 value={maxPrice} onChange={(e) => setMaxPrice(Number(e.target.value))}
+                 className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+               />
+            </div>
+
+            {/* Taste Sliders */}
+            <div className="space-y-6">
+              <SliderControl label="Body" value={body} onChange={setBody} leftLabel="Light" rightLabel="Full" />
+              <SliderControl label="Acidity" value={acidity} onChange={setAcidity} leftLabel="Soft" rightLabel="Bright" />
+              <SliderControl label="Tannin" value={tannin} onChange={setTannin} leftLabel="Silky" rightLabel="Grippy" />
+            </div>
+
+            {/* Flavor Input */}
+            <div>
+              <label className="font-display text-lg text-foreground mb-3 block">
+                Flavor notes <span className="text-muted-foreground text-xs">(optional)</span>
+              </label>
+              <input
+                type="text"
+                value={flavorInput}
+                onChange={(e) => setFlavorInput(e.target.value)}
+                placeholder="cherry, vanilla, earthy..."
+                className="w-full bg-transparent border border-border px-4 py-3 font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+              />
+            </div>
+
+            {/* SUBMIT BUTTON */}
+            <button
+              onClick={handleDiscover}
+              disabled={isLoading}
+              className="w-full py-4 bg-neon-gradient text-primary-foreground font-body text-sm uppercase tracking-widest hover:opacity-90 transition-opacity glow-pink disabled:opacity-50"
+            >
+              {isLoading ? "Consulting Sommelier..." : "Find My Wine"}
+            </button>
+          </div>
+
+          {/* RIGHT: RESULTS */}
+          <div className="lg:sticky lg:top-8">
+            {error && <div className="text-center text-red-500 font-body mb-4">{error}</div>}
+
+            {!activeWine && !isLoading && (
+              <div className="border border-dashed border-border bg-card/30 flex flex-col items-center justify-center min-h-[400px] lg:min-h-[600px] text-center p-8">
+                <div className="text-6xl mb-4">🍷</div>
+                <h3 className="font-display text-2xl text-foreground mb-2 italic">Your pick awaits</h3>
+                <p className="font-body text-sm text-muted-foreground max-w-xs">
+                  Dial in your preferences and hit "Find My Wine" to see our recommendation.
+                </p>
+              </div>
+            )}
+
+            {isLoading && (
+              <div className="border border-border bg-card/50 flex flex-col items-center justify-center min-h-[400px] lg:min-h-[600px] text-center p-8">
+                <div className="text-4xl animate-pulse mb-4">🍾</div>
+                <p className="font-body text-sm text-muted-foreground uppercase tracking-widest">
+                  Consulting the sommelier...
+                </p>
+              </div>
+            )}
+
+            {activeWine && !isLoading && (
+              <div className="animate-fade-in-up">
+                <h3 className="font-display text-2xl md:text-3xl text-foreground mb-6 text-center italic">
+                  Here's what we'd pour you
+                </h3>
+                
+                <div className="bg-card border border-border overflow-hidden shadow-2xl glow-pink">
+                   {/* Image */}
+                   <div className="aspect-[4/5] relative bg-muted">
+                      <img 
+                        src={activeWine.image} 
+                        alt={activeWine.title} 
+                        className="w-full h-full object-cover"
+                        onError={(e) => e.currentTarget.src = "https://placehold.co/400x600?text=No+Image"} 
+                      />
+                   </div>
+                   
+                   {/* Details */}
+                   <div className="p-6 space-y-4">
+                      <div className="flex justify-between items-start gap-4">
+                         <h4 className="font-display text-xl md:text-2xl text-foreground leading-tight">{activeWine.title}</h4>
+                         <span className="font-body text-lg font-bold text-primary whitespace-nowrap">{activeWine.priceRange}</span>
+                      </div>
+                      
+                      {/* The Note */}
+                      <div className="relative pl-4 border-l-2 border-primary min-h-[60px]">
+                         <p className="font-body text-sm text-muted-foreground italic">
+                           {isShuffling && currentNote === "Asking the Sommelier..." ? (
+                             <span className="animate-pulse">Thinking...</span>
+                           ) : (
+                             `"${currentNote}"`
+                           )}
+                         </p>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex gap-3 pt-2">
+                          <a 
+                            href={`https://neighborhoodwines.com/products/${activeWine.handle}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex-1 py-3 bg-primary text-primary-foreground text-center font-body text-xs uppercase tracking-widest hover:bg-primary/90 transition-colors"
+                          >
+                            Buy Now
+                          </a>
+                          <button 
+                            onClick={handleShuffle}
+                            disabled={isShuffling}
+                            className="px-4 py-3 border border-border text-foreground hover:bg-muted transition-colors font-body text-xs uppercase tracking-widest"
+                          >
+                            {isShuffling ? "..." : "Shuffle"}
+                          </button>
+                      </div>
+                   </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+        </div>
       </div>
     </section>
   );
