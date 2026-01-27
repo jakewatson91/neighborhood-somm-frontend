@@ -141,10 +141,10 @@ export function PreferenceSection() {
           </p>
         </div>
 
-        {/* SPLIT LAYOUT */}
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+        {/* SINGLE COLUMN LAYOUT */}
+        <div className="max-w-2xl mx-auto space-y-8">
           
-          {/* LEFT: PREFERENCE CONTROLS */}
+          {/* PREFERENCE CONTROLS */}
           <div className="space-y-8 border border-border p-6 md:p-8 bg-background/50 backdrop-blur-sm">
             
             {/* Wine Style */}
@@ -213,8 +213,8 @@ export function PreferenceSection() {
             </button>
           </div>
 
-          {/* RIGHT: RESULTS */}
-          <div className="lg:sticky lg:top-8">
+          {/* RESULTS */}
+          <div>
             {error && <div className="text-center text-red-500 font-body mb-4">{error}</div>}
 
             {!activeWine && !isLoading && (
