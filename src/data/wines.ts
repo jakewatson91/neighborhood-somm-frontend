@@ -1,25 +1,25 @@
-export interface Wine {
-  id: number;
-  title: string;
+export interface WineFeatures {
   type: string;
-  region: string;
-  country: string;
-  grape: string;
-  priceRange: string;
-  description: string;
-  note: string;
-  flavorNotes: string[];
-  image: string;     
-  handle: string;
-  profile: {
-    body: number;
-    acidic: number;
-    tannic: number;
-  };
+  grape: string;        // It comes in as a string like "['Pinot Noir']"
+  acidity: string;      // e.g. "Medium"
+  body: string;         // e.g. "Medium-bodied"
+  pairings: string[];   // Array of strings
 }
 
-export interface UserPreferences {
-  vibe: string;
-  type: string;
-  maxPrice: number;
+export interface Wine {
+  id: number | string;
+  title: string;
+  handle: string;
+  price: number | string;
+  image_url: string;    // Matches backend key
+  product_type: string;
+  description: string;
+  tags: string[];
+  features: WineFeatures;
+  match_score: number;
+}
+
+export interface SearchResult {
+  wine: Wine;
+  note: string;
 }
