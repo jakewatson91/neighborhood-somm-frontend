@@ -96,16 +96,20 @@ const Index = () => {
         </div>
       </header>
 
-      {/* MAIN CONTENT */}
-      {/* Dynamic Class: 'justify-center' keeps it in the middle initially. 'justify-start' moves it up when searching. */}
-      <main className={`flex-grow flex flex-col transition-all duration-700 ${isSearching ? 'justify-start pt-6' : 'justify-center'}`}>
-        <div className="container mx-auto px-6 max-w-4xl w-full">
+      {/* MAIN CONTENT - Subtle gradient background */}
+      <main className={`flex-grow flex flex-col transition-all duration-700 relative ${isSearching ? 'justify-start pt-6' : 'justify-center'}`}>
+        {/* Background gradient accent */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/3 pointer-events-none" />
+        <div className="container mx-auto px-6 max-w-4xl w-full relative z-10">
           
           {/* HERO TEXT (Only visible when NOT searching) */}
           {!isSearching && (
             <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
               <h2 className="font-display text-5xl md:text-7xl mb-6">
-                What are you <span className="text-primary">into?</span>
+                What are you <span className="text-primary relative">
+                  into?
+                  <span className="absolute -inset-1 bg-primary/20 blur-xl rounded-full -z-10" />
+                </span>
               </h2>
               <p className="text-muted-foreground font-body text-lg">
                 Describe the vibe. We'll find the bottle.

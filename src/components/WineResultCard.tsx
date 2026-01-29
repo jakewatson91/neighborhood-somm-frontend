@@ -69,7 +69,7 @@ export function WineResult({ data, onReset }: WineResultProps) {
                   {wine.features.pairings.slice(0, 4).map((pairing) => (
                     <span
                       key={pairing}
-                      className="px-3 py-1.5 font-body text-[10px] uppercase tracking-wider text-muted-foreground bg-muted/50 border border-border rounded-full"
+                      className="px-3 py-1.5 font-body text-[10px] uppercase tracking-wider text-muted-foreground bg-muted/50 border border-border rounded-full transition-all hover:border-primary/50 hover:text-primary hover:scale-105 cursor-default"
                     >
                       {pairing}
                     </span>
@@ -107,7 +107,9 @@ export function WineResult({ data, onReset }: WineResultProps) {
 
         {/* OVERLAPPING WINE IMAGE (Desktop only) */}
         <div className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 w-48 lg:w-56 h-[400px] lg:h-[450px] items-center justify-center z-10">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 h-full w-full flex items-center justify-center group">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 h-full w-full flex items-center justify-center group relative overflow-hidden hover:shadow-[0_25px_60px_-15px_rgba(235,94,40,0.3)] transition-shadow duration-500">
+            {/* Subtle gradient overlay on hover */}
+            <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             {!isImageReady && wine.image_url && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-8 h-8 border-2 border-muted border-t-primary rounded-full animate-spin" />
@@ -120,7 +122,7 @@ export function WineResult({ data, onReset }: WineResultProps) {
                 onLoad={() => setIsImageReady(true)}
                 className={`h-full w-auto object-contain mix-blend-multiply drop-shadow-xl transition-all duration-700 
                   ${isImageReady ? 'opacity-100 scale-100' : 'opacity-0 scale-95'} 
-                  group-hover:scale-105`}
+                  group-hover:scale-105 group-hover:rotate-1`}
               />
             ) : (
               <div className="text-muted-foreground text-xs uppercase tracking-widest">
