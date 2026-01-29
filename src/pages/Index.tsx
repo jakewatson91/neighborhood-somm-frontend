@@ -113,14 +113,6 @@ const Index = () => {
             </div>
           )}
 
-          {/* STICKY CHAT INPUT */}
-          {/* We keep the sticky class so it pins to top when scrolling results, but margin depends on state */}
-          <div className={`sticky top-4 z-50 transition-all duration-700 ${isSearching ? 'mb-8' : 'mb-0'}`}>
-             <ChatInput 
-               onSearch={handleSearch} 
-               isLoading={isLoading} 
-             />
-          </div>
 
           {/* LOADING */}
           {isLoading && (
@@ -134,13 +126,21 @@ const Index = () => {
 
           {/* RESULT */}
           {result && !isLoading && (
-            <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 pb-12">
+            <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
               <WineResult 
                 data={result} 
                 onReset={handleShuffle} 
               />
             </div>
           )}
+
+          {/* CHAT INPUT - Always below results */}
+          <div className={`sticky bottom-4 z-50 transition-all duration-700 ${isSearching ? 'mt-8 pb-4' : ''}`}>
+            <ChatInput 
+              onSearch={handleSearch} 
+              isLoading={isLoading} 
+            />
+          </div>
 
           {/* ERROR */}
           {error && (
