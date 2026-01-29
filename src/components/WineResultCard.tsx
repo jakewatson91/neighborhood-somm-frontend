@@ -1,7 +1,6 @@
-import { ExternalLink, Quote, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
+import { ExternalLink, RefreshCw } from 'lucide-react';
 import { SearchResult } from '@/data/wines';
 import { useState } from 'react';
-
 interface WineResultProps {
   data: SearchResult;
   onReset: () => void;
@@ -9,7 +8,6 @@ interface WineResultProps {
 
 export function WineResult({ data, onReset }: WineResultProps) {
   const { wine, note } = data;
-  const [isExpanded, setIsExpanded] = useState(false);
   const [isImageReady, setIsImageReady] = useState(false);
   
   const wineSearchUrl = `https://neighborhoodwines.com/products/${encodeURIComponent(wine.handle)}`;
@@ -28,15 +26,7 @@ export function WineResult({ data, onReset }: WineResultProps) {
         {/* MAIN CARD */}
         <div className="bg-card border border-border rounded-2xl shadow-2xl overflow-hidden ml-0 md:ml-24 lg:ml-32">
           
-          {/* 1. SOMMELIER NOTE - CARD HEADER */}
-          <div className="bg-primary/5 border-b border-primary/10 p-6 relative">
-            <Quote className="w-6 h-6 text-primary/30 absolute top-4 left-4" />
-            <p className="font-display text-lg md:text-xl text-foreground italic leading-relaxed text-center px-8">
-              "{note}"
-            </p>
-          </div>
-
-          {/* 2. CONTENT GRID */}
+          {/* CONTENT GRID */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-0">
             
             {/* LEFT: Spacer for overlapping image on mobile hidden */}
@@ -60,32 +50,17 @@ export function WineResult({ data, onReset }: WineResultProps) {
                 )}
               </div>
 
-              {/* WINE INFO */}
+              {/* WINE INFO + SOMMELIER NOTE */}
               <div>
                 <p className="font-body text-[10px] uppercase tracking-[0.2em] text-primary font-bold mb-2">
                   {wine.features.type} · {cleanGrape}
                 </p>
-                <h4 className="font-display text-3xl md:text-4xl text-foreground leading-tight">
+                <h4 className="font-display text-3xl md:text-4xl text-foreground leading-tight mb-4">
                   {wine.title}
                 </h4>
-              </div>
-
-              {/* DESCRIPTION (Expandable) */}
-              <div className="relative">
-                <div 
-                  className={`font-body text-sm text-muted-foreground leading-relaxed transition-all duration-300 ${isExpanded ? '' : 'line-clamp-3'}`}
-                  dangerouslySetInnerHTML={{ __html: wine.description.replace(/<[^>]*>?/gm, '') }} 
-                />
-                <button 
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="mt-2 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-primary hover:text-primary/80 transition-colors"
-                >
-                  {isExpanded ? (
-                    <>Read Less <ChevronUp className="w-3 h-3" /></>
-                  ) : (
-                    <>Read More <ChevronDown className="w-3 h-3" /></>
-                  )}
-                </button>
+                <p className="font-body text-sm md:text-base text-muted-foreground leading-relaxed italic">
+                  "{note}"
+                </p>
               </div>
 
               {/* PAIRINGS */}
