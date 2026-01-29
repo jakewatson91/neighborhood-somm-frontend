@@ -5,11 +5,35 @@ import { findWine } from '@/utils/Sommelier';
 import { Loader2 } from 'lucide-react';
 import { SearchResult } from '@/data/wines';
 
+// Mock data for previewing the card layout
+const MOCK_RESULT: SearchResult = {
+  wine: {
+    id: 1,
+    title: "Domaine de la Côte Pinot Noir",
+    handle: "domaine-de-la-cote-pinot-noir",
+    price: 78,
+    image_url: "https://cdn.shopify.com/s/files/1/0513/5611/3473/files/2022MaisonNoirOPNOPinotNoir.png?v=1724878641",
+    product_type: "Red Wine",
+    description: "A stunning expression of cool-climate Pinot Noir from the Sta. Rita Hills. Bright red fruit, crushed flowers, and a whisper of earth. The palate is silky with fine-grained tannins and a long, mineral-driven finish. Perfect for those who love Burgundy but want to explore California's potential.",
+    tags: ["pinot noir", "california", "organic"],
+    features: {
+      type: "Red",
+      grape: "Pinot Noir",
+      acidity: "High",
+      body: "Medium-bodied",
+      pairings: ["Duck", "Mushrooms", "Grilled Salmon", "Aged Cheese"]
+    },
+    match_score: 95
+  },
+  note: "This is exactly the kind of silky, elegant Pinot you're looking for. It's got that Burgundian soul but with California sunshine."
+};
+
 const Index = () => {
-  const [result, setResult] = useState<SearchResult | null>(null);
+  // Set mock data to preview the card
+  const [result, setResult] = useState<SearchResult | null>(MOCK_RESULT);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [lastVibe, setLastVibe] = useState<string>("");
+  const [lastVibe, setLastVibe] = useState<string>("elegant pinot noir");
   
   // HISTORY: Strictly typed as number array
   const [history, setHistory] = useState<number[]>([]);
