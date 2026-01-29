@@ -83,10 +83,14 @@ export function WineResult({ data, onReset }: WineResultProps) {
                   href={wineSearchUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 inline-flex items-center justify-center gap-2 py-4 bg-primary text-primary-foreground font-body text-xs uppercase tracking-widest rounded-xl hover:bg-primary/90 transition-all shadow-lg hover:shadow-primary/25"
+                  className="group/btn relative flex-1 inline-flex items-center justify-center gap-2 py-4 bg-primary text-primary-foreground font-body text-xs uppercase tracking-widest rounded-xl overflow-hidden transition-all shadow-lg hover:shadow-primary/25"
                 >
-                  Find a bottle
-                  <ExternalLink className="w-3 h-3" />
+                  {/* Rainbow shimmer overlay */}
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-out" />
+                  <span className="relative z-10 flex items-center gap-2">
+                    Find a bottle
+                    <ExternalLink className="w-3 h-3" />
+                  </span>
                 </a>
                 <button 
                   onClick={onReset}
