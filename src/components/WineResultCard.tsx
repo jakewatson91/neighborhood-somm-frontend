@@ -24,7 +24,7 @@ export function WineResult({ data, onReset }: WineResultProps) {
       <div className="relative">
         
         {/* MAIN CARD */}
-        <div className="bg-card border border-border rounded-2xl shadow-2xl overflow-hidden ml-0 md:ml-24 lg:ml-32">
+        <div className="bg-card border border-border rounded-2xl shadow-2xl overflow-hidden ml-0 md:ml-[min(20vw,240px)]">
           
           {/* CONTENT GRID */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-0">
@@ -55,6 +55,12 @@ export function WineResult({ data, onReset }: WineResultProps) {
                 <p className="font-body text-[10px] uppercase tracking-[0.2em] text-primary font-bold mb-2">
                   {wine.features.type} · {cleanGrape}
                 </p>
+                {/* PRICE TAG */}
+                {wine.price && (
+                  <span className="font-body text-sm font-bold text-foreground">
+                    ${Number(wine.price)}
+                  </span>
+                )}
                 <h4 className="font-display text-3xl md:text-4xl text-foreground leading-tight mb-4">
                   {wine.title}
                 </h4>
@@ -106,7 +112,7 @@ export function WineResult({ data, onReset }: WineResultProps) {
         </div>
 
         {/* OVERLAPPING WINE IMAGE (Desktop only) */}
-        <div className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 w-48 lg:w-56 h-[400px] lg:h-[450px] items-center justify-center z-10">
+        <div className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 w-[30vw] min-w-[280px] max-w-[360px] h-[70vh] max-h-[500px] min-h-[380px] items-center justify-center z-10">
           <div className="bg-white rounded-2xl shadow-2xl p-6 h-full w-full flex items-center justify-center group relative overflow-hidden hover:shadow-[0_25px_60px_-15px_rgba(235,94,40,0.3)] transition-shadow duration-500">
             {/* Subtle gradient overlay on hover */}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
