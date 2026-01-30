@@ -1,4 +1,10 @@
  import { useState } from 'react';
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipProvider, 
+  TooltipTrigger 
+} from '@/components/ui/tooltip';
 import { ChatInput } from '@/components/ChatInput'; 
 import { WineResult } from '@/components/WineResultCard';
 import { findWine } from '@/utils/Sommelier'; 
@@ -136,7 +142,17 @@ const Index = () => {
       <footer className="border-t border-border py-8 mt-auto">
         <div className="container mx-auto px-6 text-center">
           <p className="font-body text-xs text-muted-foreground">
-            © 2026 Neighborhood Somm. Drink responsibly.
+            © 2026 Neighborhood Somm. Drink responsibly. {' • '}
+            <TooltipProvider>
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger className="text-xxs cursor-pointer font-medium underline underline-offset-2">
+                  Disclaimer
+                </TooltipTrigger>
+                <TooltipContent className="max-w-[300px] text-left text-xs p-2 [transition-duration:0ms] text-muted-foreground">
+                  <p>Neighborhood Somm is not affiliated with Neighborhood Wines. This is just a personal project. You should visit their shop and buy their wines.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </p>
         </div>
       </footer>
