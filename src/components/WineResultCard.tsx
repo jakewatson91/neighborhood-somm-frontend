@@ -64,7 +64,7 @@ export function WineResult({ data, onReset }: WineResultProps) {
                 <h4 className="font-display text-3xl md:text-4xl text-foreground leading-tight mb-4">
                   {wine.title}
                 </h4>
-                <p className="font-body text-sm md:text-base text-muted-foreground leading-relaxed italic">
+                <p className="font-body text-xs text-muted-foreground leading-relaxed italic">
                   "{note}"
                 </p>
               </div>

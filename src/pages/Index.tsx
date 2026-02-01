@@ -51,9 +51,11 @@ const Index = () => {
         setResult(data);
         setHistory(prev => [...prev, Number(data.wine.id)]);
       } else {
+        setLastVibe("");
         setError("No matches found. Try describing it differently?");
       }
     } catch (err) {
+      setLastVibe("");
       setError("The cellar is currently closed (API Error).");
     } finally {
       setIsLoading(false);
@@ -64,82 +66,104 @@ const Index = () => {
   const isSearching = !!lastVibe;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
+
+      {/* DECORATIVE BACKGROUND ELEMENTS */}
+      <div className="fixed inset-0 pointer-events-none">
+        {/* 1. Start with Pure Black at the top (0% to 40%) to hide the logo box.
+           2. Transition to a subtle Maroon sheen at the bottom.
+        */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black from-40% via-background to-primary/20" />
+        
+        {/* Floating orbs - Keep them, but ensure they don't float behind the logo */}
+        {/* <div className="floating-orb w-96 h-96 bg-primary/10 -bottom-24 -left-24 animate-pulse-glow" />
+        <div className="floating-orb w-72 h-72 bg-primary/5 top-1/2 -right-24" style={{ animationDelay: '2s' }} /> */}
+      </div>
       
-      {/* HEADER */}
-      <header className="border-b border-border bg-background/95 backdrop-blur z-40">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <h1 className="font-display text-2xl md:text-3xl italic text-foreground">
-            Neighborhood Somm
-          </h1>
-          <span className="font-body text-[10px] uppercase tracking-widest text-muted-foreground hidden md:block">
-            Beta
-          </span>
-        </div>
-      </header>
-
-      {/* MAIN CONTENT - Subtle gradient background */}
-      <main className={`flex-grow flex flex-col transition-all duration-700 relative ${isSearching ? 'justify-start pt-6' : 'justify-center'}`}>
-        {/* Background gradient accent */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/3 pointer-events-none" />
-        <div className="container mx-auto px-6 max-w-4xl w-full relative z-10">
+      {/* MAIN CONTENT */}
+      <main className="flex-grow flex flex-col items-center justify-center transition-all duration-700 relative z-10">        
+        <div className="container mx-auto px-6 max-w-4xl w-full flex flex-col items-center">
           
-          {/* HERO TEXT (Only visible when NOT searching) */}
+          {/* HERO SECTION with LOGO (Only visible when NOT searching) */}
           {!isSearching && (
-            <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-              <h2 className="font-display text-5xl md:text-7xl mb-6">
-                What are you <span className="text-primary relative">
-                  into?
-                  <span className="absolute -inset-1 bg-primary/20 blur-xl rounded-full -z-10" />
-                </span>
-              </h2>
-              <p className="text-muted-foreground font-body text-lg">
-                Describe the vibe. We'll find the bottle.
+            <div className="text-center flex flex-col items-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+              {/* HERO LOGO with subtle glow */}
+              <div className="mb-6 flex justify-center relative">
+                {/* Subtle pink glow behind logo */}
+                <div className="absolute inset-0 bg-primary/15 blur-[80px] scale-90 rounded-full animate-pulse-glow" />
+                <img 
+                  src="/logo_dark.png" 
+                  alt="Neighborhood Somm" 
+                  className="h-48 sm:h-56 md:h-72 lg:h-80 w-auto relative z-10 mix-blend-lighten"
+                />
+              </div>
+              
+              {/* Tagline - refined typography */}
+              <p className="text-muted-foreground font-body text-xs tracking-[0.2em] uppercase mb-8">
+                Describe the vibe • We'll find the bottle
               </p>
+
+              {/* CHAT INPUT */}
+              <div className="w-full max-w-4xl mx-auto px-4">
+                <ChatInput 
+                  onSearch={handleSearch} 
+                  isLoading={isLoading}
+                  variant="glass"                
+                />
+                {error && (
+                  <div className="mt-6 p-4 bg-destructive/10 text-destructive rounded-lg border border-destructive/20 font-body text-sm animate-in fade-in slide-in-from-top-2">
+                    {error}
+                  </div>
+                )}
+              </div>
             </div>
           )}
+          
+          {/* SEARCH RESULTS MODE */}
+          {isSearching && (
+            <>
+              {/* 1. LOADING: Centered Spinner */}
+              {isLoading && (
+                <div className="flex flex-col items-center justify-center animate-in fade-in duration-700 py-20">
+                  <Loader2 className="w-12 h-12 text-primary animate-spin mb-6" />
+                  <p className="font-body text-xs uppercase tracking-widest text-muted-foreground animate-pulse">
+                    Checking the cellar...
+                  </p>
+                </div>
+              )}
 
+              {/* 2. RESULTS: Wine Card Only (No Logo) */}
+              {!isLoading && result && (
+                <div className="w-full animate-in fade-in slide-in-from-bottom-8 duration-700 pt-16 mb-2">
+                  <WineResult 
+                    data={result} 
+                    onReset={handleShuffle} 
+                  />
+                </div>
+              )}
 
-          {/* LOADING */}
-          {isLoading && (
-            <div className="flex flex-col items-center justify-center py-20 animate-in fade-in">
-              <Loader2 className="w-8 h-8 text-primary animate-spin mb-4" />
-              <p className="font-body text-xs uppercase tracking-widest text-muted-foreground">
-                Checking the cellar...
-              </p>
-            </div>
+              {/* Use the glass variant here. No extra CSS needed. */}
+              <div className="w-full max-w-4xl mx-auto px-4 mb-2 z-20 mt-0">
+                <ChatInput 
+                  onSearch={handleSearch} 
+                  isLoading={isLoading}
+                  variant="glass"
+                />
+              </div>
+
+              {/* ERROR MESSAGE */}
+              {error && !isLoading && (
+                <div className="text-center mt-8 p-4 bg-destructive/10 text-destructive rounded-lg border border-destructive/20 font-body text-sm animate-in fade-in">
+                  {error}
+                </div>
+              )}
+            </>
           )}
-
-          {/* RESULT */}
-          {result && !isLoading && (
-            <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
-              <WineResult 
-                data={result} 
-                onReset={handleShuffle} 
-              />
-            </div>
-          )}
-
-          {/* CHAT INPUT - Always below results */}
-          <div className={`sticky bottom-4 z-50 transition-all duration-700 ${isSearching ? 'mt-8 pb-4' : ''}`}>
-            <ChatInput 
-              onSearch={handleSearch} 
-              isLoading={isLoading} 
-            />
-          </div>
-
-          {/* ERROR */}
-          {error && (
-            <div className="text-center mt-8 p-4 bg-red-50 text-red-600 rounded-lg border border-red-100 font-body text-sm animate-in fade-in">
-              {error}
-            </div>
-          )}
-
         </div>
       </main>
 
       {/* FOOTER */}
-      <footer className="border-t border-border py-8 mt-auto">
+      <footer className="border-t border-border py-8 mt-auto relative z-10">
         <div className="container mx-auto px-6 text-center">
           <p className="font-body text-xs text-muted-foreground">
             © 2026 Neighborhood Somm. Drink responsibly. {' • '}

@@ -1,48 +1,56 @@
 import { useState } from 'react';
-import { Send, Sparkles } from 'lucide-react';
+import { Send, Loader2, Sparkles } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ChatInputProps {
-  // CHANGED: We now just pass a simple string, not complex JSON
-  onSearch: (message: string) => void; 
+  onSearch: (vibe: string) => Promise<void> | void;
   isLoading: boolean;
+  variant?: 'solid' | 'glass';
 }
 
-export function ChatInput({ onSearch, isLoading }: ChatInputProps) {
-  const [message, setMessage] = useState('');
+export const ChatInput = ({ onSearch, isLoading, variant = 'solid' }: ChatInputProps) => {
+  const [vibe, setVibe] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim() || isLoading) return;
+    if (!vibe.trim()) return;
+    onSearch(vibe);
+  };
 
-    // Direct pass-through. No parsing.
-    onSearch(message.trim());
-    setMessage('');
+  // Define the two distinct looks here
+  const baseStyles = "relative flex items-center w-full transition-all rounded-xl focus-within:ring-2 focus-within:ring-primary/20";
+  
+  const variants = {
+    solid: "bg-card border border-border shadow-sm",
+    glass: "bg-black/30 backdrop-blur-md border border-white/10 shadow-2xl hover:bg-black/40"
   };
 
   return (
-    <form onSubmit={handleSubmit} className="relative">
-      <div className="flex items-center gap-3 p-4 border border-border bg-card/50 backdrop-blur-sm rounded-xl shadow-sm focus-within:ring-2 ring-primary/20 transition-all">
-        <Sparkles className="w-5 h-5 text-primary flex-shrink-0" />
+    <div className={cn(baseStyles, variants[variant], "w-full max-w-4xl mx-auto md:ml-[min(20vw,240px)] md:mx-0")}>
+      <form onSubmit={handleSubmit} className="relative w-full flex items-center h-14">
+        <div className="absolute left-4 text-muted-foreground">
+          <Sparkles className="w-4 h-4" />
+        </div>
+        
         <input
           type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Describe your vibe... e.g. 'funky red under $40'"
+          value={vibe}
+          onChange={(e) => setVibe(e.target.value)}
+          placeholder="Describe your vibe..."
           disabled={isLoading}
-          className="flex-1 bg-transparent font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none disabled:opacity-50"
+          className="w-full bg-transparent border-none py-3 pl-12 pr-14 text-sm focus:outline-none focus:ring-0 placeholder:text-muted-foreground/50 text-foreground"
         />
-        <button
-          type="submit"
-          disabled={!message.trim() || isLoading}
-          className="p-2 bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading ? (
-             <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-          ) : (
-             <Send className="w-4 h-4" />
-          )}
-        </button>
-      </div>
-    </form>
+
+        <div className="absolute right-2">
+          <button 
+            type="submit" 
+            disabled={!vibe || isLoading}
+            className="p-2 bg-primary/10 text-primary rounded-lg hover:bg-primary hover:text-primary-foreground disabled:opacity-50 transition-all"
+          >
+            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+          </button>
+        </div>
+      </form>
+    </div>
   );
-}
+};
