@@ -24,7 +24,7 @@ export function WineResult({ data, onReset }: WineResultProps) {
       <div className="relative">
         
         {/* MAIN CARD */}
-        <div className="bg-card border border-border rounded-2xl shadow-2xl overflow-hidden ml-0 md:ml-[min(20vw,240px)]">
+        <div className="bg-card border-4 border-primary/30 rounded-2xl shadow-2xl overflow-hidden ml-0 md:ml-[min(20vw,240px)] hover:border-primary/50 transition-all">
           
           {/* CONTENT GRID */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-0">

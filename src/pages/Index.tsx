@@ -122,6 +122,21 @@ const Index = () => {
           {/* SEARCH RESULTS MODE */}
           {isSearching && (
             <>
+              {/* LOGO - Top Left, clickable to reset */}
+              <button 
+                onClick={() => {
+                  setLastVibe("");
+                  setResult(null);
+                  setHistory([]);
+                }}
+                className="absolute top-6 left-6 z-20 hover:opacity-80 transition-opacity"
+              >
+                <img 
+                  src="/logo_dark.png" 
+                  alt="Neighborhood Somm" 
+                  className="h-12 md:h-16 w-auto"
+                />
+              </button>
               {/* 1. LOADING: Centered Spinner */}
               {isLoading && (
                 <div className="flex flex-col items-center justify-center animate-in fade-in duration-700 py-20">
@@ -134,7 +149,7 @@ const Index = () => {
 
               {/* 2. RESULTS: Wine Card Only (No Logo) */}
               {!isLoading && result && (
-                <div className="w-full animate-in fade-in slide-in-from-bottom-8 duration-700 pt-16 mb-2">
+                <div className="w-full animate-in fade-in slide-in-from-bottom-8 duration-700 pt-16 pb-6">
                   <WineResult 
                     data={result} 
                     onReset={handleShuffle} 
@@ -143,7 +158,7 @@ const Index = () => {
               )}
 
               {/* Use the glass variant here. No extra CSS needed. */}
-              <div className="w-full max-w-4xl mx-auto px-4 mb-2 z-20 mt-0">
+              <div className="w-full max-w-4xl mx-auto px-4 mb-6 z-20">
                 <ChatInput 
                   onSearch={handleSearch} 
                   isLoading={isLoading}
@@ -153,7 +168,7 @@ const Index = () => {
 
               {/* ERROR MESSAGE */}
               {error && !isLoading && (
-                <div className="text-center mt-8 p-4 bg-destructive/10 text-destructive rounded-lg border border-destructive/20 font-body text-sm animate-in fade-in">
+                <div className="text-center mt-6 p-4 bg-destructive/10 text-destructive rounded-lg border border-destructive/20 font-body text-sm animate-in fade-in">
                   {error}
                 </div>
               )}

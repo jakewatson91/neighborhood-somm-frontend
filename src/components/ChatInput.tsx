@@ -18,38 +18,34 @@ export const ChatInput = ({ onSearch, isLoading, variant = 'solid' }: ChatInputP
   };
 
   // Define the two distinct looks here
-  const baseStyles = "relative flex items-center w-full transition-all rounded-xl focus-within:ring-2 focus-within:ring-primary/20";
+  const baseStyles = "relative flex items-center w-full transition-all rounded-2xl focus-within:ring-4 focus-within:ring-primary/30";
   
   const variants = {
-    solid: "bg-card border border-border shadow-sm",
-    glass: "bg-black/30 backdrop-blur-md border border-white/10 shadow-2xl hover:bg-black/40"
+    solid: "bg-card/80 backdrop-blur-md border-2 border-primary/30 shadow-lg shadow-primary/10 hover:shadow-primary/20 hover:border-primary/50",
+    glass: "bg-card/80 backdrop-blur-md border-2 border-primary/30 shadow-lg shadow-primary/10 hover:shadow-primary/20 hover:border-primary/50"
   };
 
   return (
     <div className={cn(baseStyles, variants[variant], "w-full max-w-4xl mx-auto md:ml-[min(20vw,240px)] md:mx-0")}>
-      <form onSubmit={handleSubmit} className="relative w-full flex items-center h-14">
-        <div className="absolute left-4 text-muted-foreground">
-          <Sparkles className="w-4 h-4" />
-        </div>
+      <form onSubmit={handleSubmit} className="relative w-full flex items-center gap-3 p-4">
+        <Sparkles className="w-5 h-5 text-primary flex-shrink-0 animate-pulse" />
         
         <input
           type="text"
           value={vibe}
           onChange={(e) => setVibe(e.target.value)}
-          placeholder="Describe your vibe..."
+          placeholder="Describe your vibe... e.g. 'funky red under $40'"
           disabled={isLoading}
-          className="w-full bg-transparent border-none py-3 pl-12 pr-14 text-sm focus:outline-none focus:ring-0 placeholder:text-muted-foreground/50 text-foreground"
+          className="flex-1 bg-transparent border-none text-sm text-foreground focus:outline-none focus:ring-0 placeholder:text-muted-foreground/70"
         />
 
-        <div className="absolute right-2">
-          <button 
-            type="submit" 
-            disabled={!vibe || isLoading}
-            className="p-2 bg-primary/10 text-primary rounded-lg hover:bg-primary hover:text-primary-foreground disabled:opacity-50 transition-all"
-          >
-            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-          </button>
-        </div>
+        <button 
+          type="submit" 
+          disabled={!vibe || isLoading}
+          className="p-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 disabled:opacity-50 transition-all hover:scale-105 active:scale-95"
+        >
+          {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+        </button>
       </form>
     </div>
   );
