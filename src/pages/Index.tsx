@@ -81,8 +81,8 @@ const Index = () => {
       </div>
       
       {/* MAIN CONTENT */}
-      <main className="flex-grow flex flex-col items-center justify-center transition-all duration-700 relative z-10">        
-        <div className="container mx-auto px-6 max-w-4xl w-full flex flex-col items-center">
+      <main className="min-h-screen flex flex-col items-center justify-center transition-all duration-700 relative z-10">        
+        <div className="container mx-auto px-6 max-w-5xl w-full flex flex-col items-center">
           
           {/* HERO SECTION with LOGO (Only visible when NOT searching) */}
           {!isSearching && (
@@ -104,7 +104,7 @@ const Index = () => {
               </p>
 
               {/* CHAT INPUT */}
-              <div className="w-full max-w-4xl mx-auto px-4">
+              <div className="w-full max-w-5xl mx-auto px-4">
                 <ChatInput 
                   onSearch={handleSearch} 
                   isLoading={isLoading}
@@ -149,7 +149,7 @@ const Index = () => {
 
               {/* 2. RESULTS: Wine Card Only (No Logo) */}
               {!isLoading && result && (
-                <div className="w-full animate-in fade-in slide-in-from-bottom-8 duration-700 pt-16 pb-6">
+                <div className="w-full animate-in fade-in slide-in-from-bottom-8 duration-700 pt-4 pb-6">
                   <WineResult 
                     data={result} 
                     onReset={handleShuffle} 
@@ -158,7 +158,7 @@ const Index = () => {
               )}
 
               {/* Use the glass variant here. No extra CSS needed. */}
-              <div className="w-full max-w-4xl mx-auto px-4 mb-6 z-20">
+              <div className="w-full max-w-5xl mx-auto px-4 mb-6 z-20">
                 <ChatInput 
                   onSearch={handleSearch} 
                   isLoading={isLoading}

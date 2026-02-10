@@ -18,22 +18,22 @@ export function WineResult({ data, onReset }: WineResultProps) {
     : "Blend";
 
   return (
-    <div className="w-full max-w-4xl mx-auto animate-in fade-in zoom-in duration-500">
+    <div className="w-full max-w-5xl mx-auto animate-in fade-in zoom-in duration-500">
       
       {/* OVERLAPPING CARD CONTAINER */}
       <div className="relative">
         
         {/* MAIN CARD */}
-        <div className="bg-card border-4 border-primary/30 rounded-2xl shadow-2xl overflow-hidden ml-0 md:ml-[min(20vw,240px)] hover:border-primary/50 transition-all">
+        <div className="bg-card border-4 border-primary/30 rounded-2xl shadow-2xl overflow-hidden ml-0 md:ml-[min(20vw,240px)] hover:border-primary/50 transition-all min-h-[400px]">
           
           {/* CONTENT GRID */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-0">
             
             {/* LEFT: Spacer for overlapping image on mobile hidden */}
-            <div className="hidden md:block md:col-span-4 lg:col-span-3" />
+            <div className="hidden md:block md:col-span-3 lg:col-span-3" />
 
             {/* RIGHT: Stats & Buy */}
-            <div className="md:col-span-8 lg:col-span-9 p-6 md:p-8 space-y-6">
+            <div className="md:col-span-9 lg:col-span-9 p-6 md:p-8 space-y-6">
               
               {/* MOBILE IMAGE (visible only on small screens) */}
               <div className="md:hidden bg-white rounded-xl p-4 flex items-center justify-center h-[250px]">
@@ -64,7 +64,7 @@ export function WineResult({ data, onReset }: WineResultProps) {
                 <h4 className="font-display text-3xl md:text-4xl text-foreground leading-tight mb-4">
                   {wine.title}
                 </h4>
-                <p className="font-body text-xs text-muted-foreground leading-relaxed italic">
+                <p className="font-body text-sm text-muted-foreground leading-relaxed italic">
                   "{note}"
                 </p>
               </div>

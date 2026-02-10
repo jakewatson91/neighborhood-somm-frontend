@@ -26,7 +26,7 @@ export const ChatInput = ({ onSearch, isLoading, variant = 'solid' }: ChatInputP
   };
 
   return (
-    <div className={cn(baseStyles, variants[variant], "w-full max-w-4xl mx-auto md:ml-[min(20vw,240px)] md:mx-0")}>
+    <div className={cn(baseStyles, variants[variant], "w-full max-w-5xl mx-auto md:ml-[min(20vw,240px)] md:mx-0")}>
       <form onSubmit={handleSubmit} className="relative w-full flex items-center gap-3 p-4">
         <Sparkles className="w-5 h-5 text-primary flex-shrink-0 animate-pulse" />
         
