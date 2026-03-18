@@ -1,4 +1,4 @@
-import { ExternalLink, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { SearchResult } from '@/data/wines';
 import { useState } from 'react';
 interface WineResultProps {
@@ -85,19 +85,14 @@ export function WineResult({ data, onReset }: WineResultProps) {
 
               {/* ACTIONS */}
               <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                <a
-                  href={wineSearchUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group/btn relative flex-1 inline-flex items-center justify-center gap-2 py-4 bg-primary text-primary-foreground font-body text-xs uppercase tracking-widest rounded-xl overflow-hidden transition-all shadow-lg hover:shadow-primary/25"
+                <button
+                  disabled
+                  className="flex-1 inline-flex items-center justify-center gap-2 py-4 bg-muted text-muted-foreground font-body text-xs uppercase tracking-widest rounded-xl overflow-hidden opacity-60 cursor-not-allowed"
                 >
-                  {/* Rainbow shimmer overlay */}
-                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-out" />
-                  <span className="relative z-10 flex items-center gap-2">
-                    Find a bottle
-                    <ExternalLink className="w-3 h-3" />
+                  <span className="flex items-center gap-2">
+                    Coming soon
                   </span>
-                </a>
+                </button>
                 <button 
                   onClick={onReset}
                   className="inline-flex items-center justify-center gap-2 py-4 px-6 border border-border text-muted-foreground font-body text-xs uppercase tracking-widest rounded-xl hover:bg-muted/50 hover:text-foreground transition-all"
