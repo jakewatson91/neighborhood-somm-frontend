@@ -1,4 +1,4 @@
-import { PostHog } from 'posthog-node'
+import posthog from 'posthog-js';
 
 export const posthog = new PostHog(
   import.meta.env.VITE_POSTHOG_KEY as string,
