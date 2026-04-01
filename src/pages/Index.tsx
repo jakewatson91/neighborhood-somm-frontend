@@ -1,15 +1,16 @@
- import { useState } from 'react';
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipProvider, 
-  TooltipTrigger 
+import { useState } from 'react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
 } from '@/components/ui/tooltip';
-import { ChatInput } from '@/components/ChatInput'; 
+import { ChatInput } from '@/components/ChatInput';
 import { WineResult } from '@/components/WineResultCard';
-import { findWine } from '@/utils/Sommelier'; 
+import { findWine } from '@/utils/Sommelier';
 import { Loader2 } from 'lucide-react';
 import { SearchResult } from '@/data/wines';
+import { posthog, getAnonymousId } from '@/lib/posthog';
 
 const Index = () => {
   const [result, setResult] = useState<SearchResult | null>(null);
@@ -22,14 +23,24 @@ const Index = () => {
 
   // 1. HANDLER FOR NEW SEARCH
   const handleSearch = async (vibe: string) => {
+    posthog.capture({
+      distinctId: getAnonymousId(),
+      event: 'wine search submitted',
+      properties: { vibe },
+    });
     setLastVibe(vibe);
-    setHistory([]); 
-    await performSearch(vibe, false, []); 
+    setHistory([]);
+    await performSearch(vibe, false, []);
   };
 
   // 2. HANDLER FOR SHUFFLE
   const handleShuffle = async () => {
     if (!lastVibe) return;
+    posthog.capture({
+      distinctId: getAnonymousId(),
+      event: 'wine shuffle requested',
+      properties: { vibe: lastVibe, history_length: history.length },
+    });
     await performSearch(lastVibe, true, history);
   };
 
@@ -40,23 +51,46 @@ const Index = () => {
     if (!isShuffle) setResult(null);
 
     try {
-      const data = await findWine({ 
-        vibe: vibe, 
+      const data = await findWine({
+        vibe: vibe,
         maxPrice: 100,
         shuffle: isShuffle,
         excludeIds: currentHistory
       });
-      
+
       if (data) {
         setResult(data);
         setHistory(prev => [...prev, Number(data.wine.id)]);
+        posthog.capture({
+          distinctId: getAnonymousId(),
+          event: 'wine recommendation received',
+          properties: {
+            vibe,
+            wine_id: data.wine.id,
+            wine_title: data.wine.title,
+            wine_type: data.wine.features?.type,
+            wine_price: data.wine.price,
+            is_shuffle: isShuffle,
+          },
+        });
       } else {
         setLastVibe("");
         setError("No matches found. Try describing it differently?");
+        posthog.capture({
+          distinctId: getAnonymousId(),
+          event: 'wine search failed',
+          properties: { vibe, reason: 'no_results', is_shuffle: isShuffle },
+        });
       }
     } catch (err) {
       setLastVibe("");
       setError("The cellar is currently closed (API Error).");
+      posthog.captureException(err, getAnonymousId(), { vibe, is_shuffle: isShuffle });
+      posthog.capture({
+        distinctId: getAnonymousId(),
+        event: 'wine search failed',
+        properties: { vibe, reason: 'api_error', is_shuffle: isShuffle },
+      });
     } finally {
       setIsLoading(false);
     }
@@ -123,8 +157,13 @@ const Index = () => {
           {isSearching && (
             <>
               {/* LOGO - Top Left, clickable to reset */}
-              <button 
+              <button
                 onClick={() => {
+                  posthog.capture({
+                    distinctId: getAnonymousId(),
+                    event: 'wine search reset',
+                    properties: { last_vibe: lastVibe },
+                  });
                   setLastVibe("");
                   setResult(null);
                   setHistory([]);
