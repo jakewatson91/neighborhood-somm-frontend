@@ -1,12 +1,14 @@
 import posthog from 'posthog-js';
 
-posthog.init(
-  import.meta.env.VITE_POSTHOG_KEY as string,
-  {
-    host: import.meta.env.VITE_POSTHOG_HOST as string,
-    enableExceptionAutocapture: true,
-  }
-)
+const key = import.meta.env.VITE_POSTHOG_KEY as string;
+const host = import.meta.env.VITE_POSTHOG_HOST as string;
+
+console.log('[PostHog Debug]', { key: key ? 'SET' : 'MISSING', host: host ? 'SET' : 'MISSING' });
+
+posthog.init(key, {
+  host,
+  enableExceptionAutocapture: true,
+})
 
 export { posthog }
 
