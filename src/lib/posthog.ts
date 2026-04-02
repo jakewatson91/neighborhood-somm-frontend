@@ -1,12 +1,14 @@
 import posthog from 'posthog-js';
 
-export const posthog = new PostHog(
+posthog.init(
   import.meta.env.VITE_POSTHOG_KEY as string,
   {
     host: import.meta.env.VITE_POSTHOG_HOST as string,
     enableExceptionAutocapture: true,
   }
 )
+
+export { posthog }
 
 export function getAnonymousId(): string {
   const key = 'posthog_anonymous_id'
