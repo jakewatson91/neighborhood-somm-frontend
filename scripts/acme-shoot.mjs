@@ -1,0 +1,12 @@
+import { chromium } from 'playwright';
+const b = await chromium.launch();
+const c = await b.newContext({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 2 });
+const p = await c.newPage();
+await p.goto('http://localhost:3001/', { waitUntil: 'networkidle' }).catch(() => {});
+await p.waitForTimeout(1000);
+await p.screenshot({ path: '/tmp/shots/acme-home.png' });
+await p.goto('http://localhost:3001/wines', { waitUntil: 'networkidle' }).catch(() => {});
+await p.waitForTimeout(1500);
+await p.screenshot({ path: '/tmp/shots/acme-wines.png' });
+await b.close();
+console.log('done');

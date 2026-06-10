@@ -1,6 +1,7 @@
 import { RefreshCw } from 'lucide-react';
 import { SearchResult } from '@/data/wines';
 import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 interface WineResultProps {
   data: SearchResult;
   onReset: () => void;
@@ -64,9 +65,9 @@ export function WineResult({ data, onReset }: WineResultProps) {
                 <h4 className="font-display text-3xl md:text-4xl text-foreground leading-tight mb-4">
                   {wine.title}
                 </h4>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed italic">
-                  "{note}"
-                </p>
+                <div className="font-body text-sm text-muted-foreground leading-relaxed italic [&_p]:mb-2 [&_strong]:font-semibold [&_strong]:text-foreground [&_em]:italic">
+                  <ReactMarkdown>{note}</ReactMarkdown>
+                </div>
               </div>
 
               {/* PAIRINGS */}

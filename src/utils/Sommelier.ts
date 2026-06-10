@@ -1,4 +1,5 @@
 import { SearchResult } from '../data/wines';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface UserPreferences {
   vibe: string;
@@ -7,33 +8,28 @@ export interface UserPreferences {
   excludeIds?: number[];
 }
 
+// Calls the `find-wine` Supabase Edge Function: it embeds the vibe with gte-small,
+// runs pgvector search, and writes the sommelier note via Groq -- all on Supabase.
+// supabase-js forwards the logged-in session's JWT automatically, so RLS gates
+// whether exclusive (members-only) wines can be recommended.
 export const findWine = async (prefs: UserPreferences): Promise<SearchResult | null> => {
   try {
     console.log("🍷 Asking the Sommelier...", prefs);
 
-      const API_BASE = import.meta.env.VITE_API_URL; 
+    const { data, error } = await supabase.functions.invoke('find-wine', {
+      body: {
+        vibe: prefs.vibe,
+        maxPrice: prefs.maxPrice,
+        shuffle: prefs.shuffle || false,
+        excludeIds: prefs.excludeIds || [],
+      },
+    });
 
-      const response = await fetch(`${API_BASE}/find-wine`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          vibe: prefs.vibe, 
-          maxPrice: prefs.maxPrice,
-          shuffle: prefs.shuffle || false,
-          excludeIds: prefs.excludeIds || [] // Send array
-        }),
-      });
+    if (error) throw error;
+    if (!data || !data.wine) return null;
 
-    if (!response.ok) {
-      throw new Error(`Sommelier is busy (Status: ${response.status})`);
-    }
-
-    // THE FIX: The backend now returns exactly the structure our frontend expects.
-    // No mapping needed. We just cast it to our Type.
-    const data: SearchResult = await response.json();
     console.log("✅ Sommelier Responded:", data);
-
-    return data;
+    return data as SearchResult;
 
   } catch (error) {
     console.error("❌ Sommelier connection failed:", error);

@@ -11,6 +11,8 @@ import { findWine } from '@/utils/Sommelier';
 import { Loader2 } from 'lucide-react';
 import { SearchResult } from '@/data/wines';
 import { posthog, getAnonymousId } from '@/lib/posthog';
+import { AuthButton } from '@/components/AuthButton';
+import { MemberPicks } from '@/components/MemberPicks';
 
 const Index = () => {
   const [result, setResult] = useState<SearchResult | null>(null);
@@ -102,6 +104,11 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
 
+      {/* TOP-RIGHT: member auth (compare lives at /compare, intentionally unlinked) */}
+      <div className="absolute top-6 right-6 z-30 flex items-center gap-4">
+        <AuthButton />
+      </div>
+
       {/* DECORATIVE BACKGROUND ELEMENTS */}
       <div className="fixed inset-0 pointer-events-none">
         {/* 1. Start with Pure Black at the top (0% to 40%) to hide the logo box.
@@ -115,7 +122,7 @@ const Index = () => {
       </div>
       
       {/* MAIN CONTENT */}
-      <main className="min-h-screen flex flex-col items-center justify-center transition-all duration-700 relative z-10">        
+      <main className={`min-h-screen flex flex-col items-center transition-all duration-700 relative z-10 ${isSearching ? "justify-start pt-28" : "justify-center"}`}>
         <div className="container mx-auto px-6 max-w-5xl w-full flex flex-col items-center">
           
           {/* HERO SECTION with LOGO (Only visible when NOT searching) */}
@@ -125,13 +132,13 @@ const Index = () => {
               <div className="mb-6 flex justify-center relative">
                 {/* Subtle pink glow behind logo */}
                 <div className="absolute inset-0 bg-primary/15 blur-[80px] scale-90 rounded-full animate-pulse-glow" />
-                <img 
-                  src="/logo_dark.png" 
-                  alt="Neighborhood Somm" 
+                <img
+                  src="/logo_dark.png"
+                  alt="Neighborhood Somm"
                   className="h-48 sm:h-56 md:h-72 lg:h-80 w-auto relative z-10 mix-blend-lighten"
                 />
               </div>
-              
+
               {/* Tagline - refined typography */}
               <p className="text-muted-foreground font-body text-xs tracking-[0.2em] uppercase mb-8">
                 Describe the vibe • We'll find the bottle
@@ -215,6 +222,11 @@ const Index = () => {
           )}
         </div>
       </main>
+
+      {/* EXCLUSIVE MEMBER PICKS (the RLS reveal) — always visible, below the search */}
+      <div className="relative z-10">
+        <MemberPicks />
+      </div>
 
       {/* FOOTER */}
       <footer className="border-t border-border py-8 mt-auto relative z-10">
