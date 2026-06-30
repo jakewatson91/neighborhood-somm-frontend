@@ -12,7 +12,6 @@ import { Loader2 } from 'lucide-react';
 import { SearchResult } from '@/data/wines';
 import { posthog, getAnonymousId } from '@/lib/posthog';
 import { AuthButton } from '@/components/AuthButton';
-import { MemberPicks } from '@/components/MemberPicks';
 
 const Index = () => {
   const [result, setResult] = useState<SearchResult | null>(null);
@@ -222,11 +221,6 @@ const Index = () => {
           )}
         </div>
       </main>
-
-      {/* EXCLUSIVE MEMBER PICKS (the RLS reveal) — always visible, below the search */}
-      <div className="relative z-10">
-        <MemberPicks />
-      </div>
 
       {/* FOOTER */}
       <footer className="border-t border-border py-8 mt-auto relative z-10">
